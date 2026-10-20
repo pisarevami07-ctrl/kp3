@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Финансовый директор на аутсорсе | Интерактивное КП</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            900: '#14532d',
+                        },
+                        dark: {
+                            800: '#1e293b',
+                            900: '#0f172a',
+                        }
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-out',
+                        'slide-up': 'slideUp 0.5s ease-out',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        slideUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
+        
+        /* Custom Range Slider */
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 24px;
+            width: 24px;
+            border-radius: 50%;
+            background: #16a34a;
+            cursor: pointer;
+            margin-top: -10px;
+            box-shadow: 0 0 10px rgba(22, 163, 74, 0.5);
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 6px;
+            cursor: pointer;
+            background: #334155;
+            border-radius: 3px;
+        }
+        
+        /* Tab transitions */
+        .tab-content {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+        .tab-content.active {
+            display: block;
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="bg-dark-900 text-slate-200 antialiased selection:bg-brand-500 selection:text-white overflow-hidden">
+
+    <!-- Входной экран персонализации (Gateway) -->
+    <div id="welcome-screen" class="fixed inset-0 z-[100] bg-dark-900 flex items-center justify-center transition-opacity duration-700 px-4">
+        <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-brand-900/20 via-dark-900 to-dark-900 -z-10"></div>
+        <div class="max-w-2xl w-full bg-slate-800/80 backdrop-blur-xl border border-slate-700 p-8 rounded-3xl shadow-2xl text-center transform transition-transform duration-500 scale-100" id="welcome-card">
+            <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">Настроим предложение под вас</h2>
+            <p class="text-slate-400 mb-8">Выберите вашу главную цель или проблему на данный момент, чтобы я показал релевантные решения:</p>
+            <div class="space-y-4">
+                <button onclick="selectProfile('cashgap')" class="w-full text-left p-5 rounded-2xl border border-slate-600 hover:border-brand-500 hover:bg-slate-700/80 transition group flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-full bg-red-500/20 text-red-500 flex shrink-0 items-center justify-center text-xl group-hover:scale-110 transition shadow-[0_0_15px_rgba(239,68,68,0.2)]">💸</div>
+                    <div>
+                        <div class="font-bold text-white text-lg">Избавиться от кассовых разрывов</div>
+                        <div class="text-sm text-slate-400 mt-1">Растем в обороте, но денег на счетах постоянно не хватает</div>
+                    </div>
+                </button>
+                <button onclick="selectProfile('chaos')" class="w-full text-left p-5 rounded-2xl border border-slate-600 hover:border-brand-500 hover:bg-slate-700/80 transition group flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-full bg-orange-500/20 text-orange-500 flex shrink-0 items-center justify-center text-xl group-hover:scale-110 transition shadow-[0_0_15px_rgba(249,115,22,0.2)]">📊</div>
+                    <div>
+                        <div class="font-bold text-white text-lg">Навести порядок в учете</div>
+                        <div class="text-sm text-slate-400 mt-1">Десятки Excel-таблиц, непонятно какая реальная чистая прибыль</div>
+                    </div>
+                </button>
+                <button onclick="selectProfile('scale')" class="w-full text-left p-5 rounded-2xl border border-slate-600 hover:border-brand-500 hover:bg-slate-700/80 transition group flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-full bg-brand-500/20 text-brand-500 flex shrink-0 items-center justify-center text-xl group-hover:scale-110 transition shadow-[0_0_15px_rgba(34,197,94,0.2)]">🚀</div>
+                    <div>
+                        <div class="font-bold text-white text-lg">Оцифроваться для роста или инвесторов</div>
+                        <div class="text-sm text-slate-400 mt-1">Нужна твердая финмодель и прозрачность для безопасного масштабирования</div>
+                    </div>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <nav class="fixed w-full z-50 bg-dark-900/90 backdrop-blur-md border-b border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <div class="flex items-center gap-2">
+                    <svg class="w-8 h-8 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+                    <span class="font-bold text-xl tracking-tight text-white">Fin<span class="text-brand-500">Director</span></span>
+                </div>
+                <div class="hidden md:flex space-x-8 text-sm font-medium">
+                    <a href="#calculator" class="hover:text-brand-500 transition">Аудит потерь</a>
+                    <a href="#system" class="hover:text-brand-500 transition">Система</a>
+                    <a href="#cases" class="hover:text-brand-500 transition">Кейсы</a>
+                    <a href="#simulator" class="hover:text-brand-500 transition">Симулятор</a>
+                </div>
+                <div>
+                    <a href="#quiz" class="bg-brand-600 hover:bg-brand-500 text-white px-5 py-2.5 rounded-lg font-medium transition shadow-[0_0_15px_rgba(22,163,74,0.4)] hover:shadow-[0_0_25px_rgba(22,163,74,0.6)]">
+                        Бесплатный разбор
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <section id="calculator" class="pt-32 pb-20 relative overflow-hidden">
+        <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-brand-900/20 via-dark-900 to-dark-900 -z-10"></div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid lg:grid-cols-2 gap-12 items-center">
+                <div class="animate-slide-up">
+                    <div class="inline-block bg-slate-800 text-brand-500 font-semibold px-4 py-1.5 rounded-full text-sm mb-6 border border-slate-700">
+                        Для собственников с оборотом от 5 млн ₽/мес
+                    </div>
+                    <h1 id="hero-title" class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white leading-tight mb-6">
+                        Вы растете в обороте, но <span class="text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-rose-600">где реальные деньги</span> на счету?
+                    </h1>
+                    <p id="hero-subtitle" class="text-lg text-slate-400 mb-8 leading-relaxed">
+                        Пока вы смотрите на красивые цифры выручки в отчетах отдела продаж, ваша реальная прибыль съедается кассовыми разрывами, замораживается на складе и растворяется в дебиторке.
+                    </p>
+                    <div class="flex items-center gap-4 text-sm font-medium text-slate-300 mb-8">
+                        <div class="flex items-center gap-2"><svg class="w-5 h-5 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Окупаемость за 1 месяц</div>
+                        <div class="flex items-center gap-2"><svg class="w-5 h-5 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Прозрачность 100%</div>
+                    </div>
+                </div>
+
+                <div class="bg-slate-800/50 backdrop-blur-sm border border-slate-700 p-8 rounded-2xl shadow-2xl relative animate-slide-up" style="animation-delay: 0.2s;">
+                    <div id="calc-badge" class="absolute -top-4 -right-4 bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg transform rotate-12 transition-colors duration-300">Триггер потери</div>
+                    <h3 id="calc-title" class="text-2xl font-bold text-white mb-2">Сколько денег вы заморозили?</h3>
+                    <p id="calc-desc" class="text-sm text-slate-400 mb-8">Узнайте сумму, которую вы могли бы прямо сейчас вывести как дивиденды, просто наладив оборачиваемость.</p>
+                    
+                    <div class="space-y-8">
+                        <div>
+                            <div class="flex justify-between mb-2">
+                                <label class="text-sm font-medium text-slate-300">Среднемесячная выручка (₽)</label>
+                                <span id="revVal" class="text-brand-500 font-bold">10 000 000 ₽</span>
+                            </div>
+                            <input type="range" id="revenue" min="1000000" max="100000000" step="1000000" value="10000000">
+                        </div>
+                        
+                        <div>
+                            <div class="flex justify-between mb-2">
+                                <label class="text-sm font-medium text-slate-300">Средняя отсрочка платежа (дни)</label>
+                                <span id="delayVal" class="text-brand-500 font-bold">30 дней</span>
+                            </div>
+                            <input type="range" id="delay" min="0" max="120" step="5" value="30">
+                        </div>
+
+                        <div class="bg-dark-900 p-6 rounded-xl border border-slate-700 text-center">
+                            <p class="text-sm text-slate-400 mb-2">Прямо сейчас в дебиторке у вас заморожено около:</p>
+                            <p id="frozenResult" class="text-4xl font-bold text-red-500 mb-2 transition-all">10 000 000 ₽</p>
+                            <p class="text-xs text-slate-500">Это ваши деньги, которые работают на чужой бизнес.</p>
+                        </div>
+
+                        <button onclick="document.getElementById('quiz').scrollIntoView()" class="w-full bg-white text-dark-900 hover:bg-slate-200 font-bold py-4 rounded-xl transition flex justify-center items-center gap-2">
+                            Вернуть эти деньги в бизнес <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="system" class="py-20 bg-dark-800 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">Бизнес должен приносить свободу, а не тревогу из-за таблиц</h2>
+                <p class="text-slate-400">Посмотрите, как меняется реальность собственника, когда в компании появляется сильный финансовый директор.</p>
+            </div>
+
+            <div class="flex justify-center mb-8">
+                <div class="bg-dark-900 p-1 rounded-xl flex gap-1 border border-slate-700">
+                    <button id="btn-before" class="px-8 py-3 rounded-lg font-medium transition active-tab bg-slate-700 text-white" onclick="switchTab('before')">Как сейчас (Хаос)</button>
+                    <button id="btn-after" class="px-8 py-3 rounded-lg font-medium text-slate-400 hover:text-white transition" onclick="switchTab('after')">С финдиректором (Система)</button>
+                </div>
+            </div>
+
+            <!-- Before Content -->
+            <div id="tab-before" class="tab-content active max-w-5xl mx-auto bg-dark-900 rounded-2xl border border-red-900/30 p-8 md:p-12 shadow-2xl relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-64 h-64 bg-red-500/5 rounded-full blur-3xl"></div>
+                <div class="grid md:grid-cols-2 gap-12 items-center">
+                    <div>
+                        <h3 class="text-2xl font-bold text-red-400 mb-6">Жизнь в состоянии тушения пожаров</h3>
+                        <ul class="space-y-4">
+                            <li class="flex items-start gap-3">
+                                <svg class="w-6 h-6 text-red-500 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                <div><strong class="text-white">Страшно вытащить дивиденды.</strong> Непонятно, чьи это деньги на счету — ваши или поставщиков. Вывод средств похож на рулетку.</div>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <svg class="w-6 h-6 text-red-500 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                <div><strong class="text-white">Бухгалтер говорит «прибыль есть».</strong> Но на расчетном счете пусто. Налоги растут, а личный доход собственника падает.</div>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <svg class="w-6 h-6 text-red-500 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                <div><strong class="text-white">Сотни экселек.</strong> Отчеты не бьются между собой. Чтобы принять решение, нужно собирать данные неделю, когда момент уже упущен.</div>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="relative rounded-xl overflow-hidden border border-slate-700 bg-slate-800 p-6 flex flex-col justify-center items-center h-64 text-slate-500 font-mono text-sm opacity-80">
+                        <!-- Mockup of chaotic excel -->
+                        <div class="w-full bg-slate-700/50 h-6 mb-2 rounded flex gap-2 p-1"><div class="w-1/4 bg-slate-600 rounded"></div><div class="w-1/2 bg-red-900/50 rounded"></div></div>
+                        <div class="w-full bg-slate-700/50 h-6 mb-2 rounded flex gap-2 p-1"><div class="w-1/3 bg-slate-600 rounded"></div><div class="w-1/3 bg-slate-600 rounded"></div></div>
+                        <div class="w-full bg-slate-700/50 h-6 mb-2 rounded flex gap-2 p-1"><div class="w-1/2 bg-slate-600 rounded"></div><div class="w-1/4 bg-red-900/50 rounded"></div></div>
+                        <div class="absolute inset-0 bg-dark-900/40 backdrop-blur-[2px] flex items-center justify-center">
+                            <span class="bg-red-500/20 text-red-400 px-4 py-2 rounded-lg font-bold border border-red-500/30 uppercase tracking-widest rotate-[-10deg]">Слепая зона</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- After Content -->
+            <div id="tab-after" class="tab-content max-w-5xl mx-auto bg-dark-900 rounded-2xl border border-brand-900/50 p-8 md:p-12 shadow-2xl relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-64 h-64 bg-brand-500/5 rounded-full blur-3xl"></div>
+                <div class="grid md:grid-cols-2 gap-12 items-center">
+                    <div>
+                        <h3 class="text-2xl font-bold text-brand-400 mb-6">Уверенное управление по приборам</h3>
+                        <ul class="space-y-4">
+                            <li class="flex items-start gap-3">
+                                <svg class="w-6 h-6 text-brand-500 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                <div><strong class="text-white">Дивидендная политика.</strong> Вы точно знаете, какую сумму можно безопасно изъять из бизнеса 5-го числа каждого месяца.</div>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <svg class="w-6 h-6 text-brand-500 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                <div><strong class="text-white">Отчеты P&L и Cash Flow.</strong> Единый дашборд. Три главные цифры бизнеса всегда в вашем смартфоне в реальном времени.</div>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <svg class="w-6 h-6 text-brand-500 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                <div><strong class="text-white">Платежный календарь.</strong> Превентивная защита от кассовых разрывов. Система предупреждает о дефиците за 30-60 дней.</div>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="relative rounded-xl overflow-hidden border border-brand-900 bg-dark-800 p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <div class="text-sm font-bold text-white">Дашборд СЕО</div>
+                            <div class="text-xs text-brand-500 bg-brand-900/30 px-2 py-1 rounded">Обновлено: сегодня</div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3 mb-4">
+                            <div class="bg-dark-900 p-3 rounded-lg border border-slate-700">
+                                <div class="text-xs text-slate-400 mb-1">Чистая прибыль</div>
+                                <div class="text-lg font-bold text-white">+ 4.2M ₽</div>
+                            </div>
+                            <div class="bg-dark-900 p-3 rounded-lg border border-slate-700">
+                                <div class="text-xs text-slate-400 mb-1">Свободные деньги</div>
+                                <div class="text-lg font-bold text-brand-400">1.8M ₽</div>
+                            </div>
+                        </div>
+                        <div class="h-20 bg-dark-900 rounded-lg border border-slate-700 p-2 flex items-end gap-1">
+                            <!-- Mini chart bars -->
+                            <div class="w-1/6 bg-brand-600 rounded-t h-[40%]"></div>
+                            <div class="w-1/6 bg-brand-600 rounded-t h-[60%]"></div>
+                            <div class="w-1/6 bg-brand-600 rounded-t h-[30%]"></div>
+                            <div class="w-1/6 bg-brand-600 rounded-t h-[80%]"></div>
+                            <div class="w-1/6 bg-brand-600 rounded-t h-[70%]"></div>
+                            <div class="w-1/6 bg-brand-500 rounded-t h-[100%]"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="cases" class="py-20 bg-dark-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">Не обещаю, а показываю на реальных цифрах</h2>
+                <p class="text-slate-400 max-w-2xl mx-auto">Я не продаю часы работы. Я продаю твердый результат: найденные деньги, защищенные активы и оцифрованную модель, которая работает на собственника.</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8">
+                <!-- Case 1 -->
+                <div class="bg-slate-800/40 border border-slate-700 rounded-2xl p-8 hover:border-brand-500/50 transition duration-300 group">
+                    <div class="text-brand-500 font-bold text-sm mb-2 uppercase tracking-wide">Ниша: Производство и опт</div>
+                    <h3 class="text-2xl font-bold text-white mb-6">Оцифровка операционки и вывод компании из системного минуса</h3>
+                    <div class="space-y-4 mb-6 text-slate-300 text-sm">
+                        <p><strong class="text-white">Точка А:</strong> Выручка 45 млн ₽/мес. Собственник брал кредиты, чтобы выплатить ЗП. Рентабельность неизвестна, склад перетарен.</p>
+                        <p><strong class="text-white">Решение:</strong> Внедрен ABC-XYZ анализ ассортимента, отсечены 30% убыточных позиций. Разработан платежный календарь с жестким лимитированием выплат.</p>
+                    </div>
+                    <div class="bg-dark-900 rounded-xl p-4 border border-slate-700/50">
+                        <div class="text-xs text-slate-400 mb-1">Результат за 3 месяца:</div>
+                        <div class="text-xl font-bold text-brand-400">Освободили 12 млн ₽ из запасов. Вышли на стабильные +3 млн ₽ дивидендов.</div>
+                    </div>
+                </div>
+
+                <!-- Case 2 -->
+                <div class="bg-slate-800/40 border border-slate-700 rounded-2xl p-8 hover:border-brand-500/50 transition duration-300 group">
+                    <div class="text-brand-500 font-bold text-sm mb-2 uppercase tracking-wide">Ниша: Строительство / Проекты</div>
+                    <h3 class="text-2xl font-bold text-white mb-6">Оценка рентабельности пула проектов</h3>
+                    <div class="space-y-4 mb-6 text-slate-300 text-sm">
+                        <p><strong class="text-white">Точка А:</strong> 15 параллельных объектов. Деньги с новых авансов шли на закрытие старых дыр (финансовая пирамида). Прибыль считалась "котловым" методом.</p>
+                        <p><strong class="text-white">Решение:</strong> Оцифровка P&L по каждому проекту (ОДДС + баланс). Внедрение процента завершенности и фондирования. Отказ от 2 крупных, но токсичных объектов.</p>
+                    </div>
+                    <div class="bg-dark-900 rounded-xl p-4 border border-slate-700/50">
+                        <div class="text-xs text-slate-400 mb-1">Результат за 4 месяца:</div>
+                        <div class="text-xl font-bold text-brand-400">Ликвидирован кассовый разрыв в 24 млн ₽. Рентабельность портфеля выросла с 8% до 19%.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="simulator" class="py-20 bg-dark-800 relative overflow-hidden">
+        <div class="absolute left-0 top-1/2 -translate-y-1/2 w-96 h-96 bg-brand-600/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="grid lg:grid-cols-5 gap-12 items-center">
+                <div class="lg:col-span-2">
+                    <div class="inline-block bg-brand-900/30 text-brand-400 font-semibold px-4 py-1.5 rounded-full text-sm mb-6 border border-brand-500/30">
+                        Интерактивный симулятор
+                    </div>
+                    <h2 class="text-3xl md:text-4xl font-bold text-white mb-6">Попробуйте управлять финансами прямо сейчас</h2>
+                    <p class="text-slate-400 mb-8">Посмотрите, как всего пара грамотных управленческих решений, основанных на цифрах, спасает компанию от жесткого кассового разрыва в следующем квартале.</p>
+                    
+                    <div class="space-y-4">
+                        <div class="p-4 rounded-xl border border-slate-700 bg-dark-900">
+                            <h4 class="text-white font-bold mb-2">Ситуация (Точка А):</h4>
+                            <p class="text-sm text-slate-400">График показывает прогнозный остаток денег на счетах. К марту компания уходит в жесткий минус (-500 тыс. ₽). Нужен кредит, либо мы принимаем решения.</p>
+                        </div>
+                        
+                        <button id="simBtn1" onclick="applyDecision(1)" class="w-full text-left p-4 rounded-xl border border-brand-500/30 bg-slate-800 hover:bg-slate-700 transition flex justify-between items-center group">
+                            <div>
+                                <div class="font-bold text-white group-hover:text-brand-400 transition">Решение 1: Снизить отсрочку клиентам</div>
+                                <div class="text-xs text-slate-400 mt-1">С 45 до 30 дней. Ускоряем приток денег.</div>
+                            </div>
+                            <div class="w-6 h-6 rounded-full border-2 border-brand-500 flex items-center justify-center sim-check hidden">
+                                <svg class="w-4 h-4 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                            </div>
+                        </button>
+
+                        <button id="simBtn2" onclick="applyDecision(2)" class="w-full text-left p-4 rounded-xl border border-brand-500/30 bg-slate-800 hover:bg-slate-700 transition flex justify-between items-center group">
+                            <div>
+                                <div class="font-bold text-white group-hover:text-brand-400 transition">Решение 2: Разбить годовые бонусы</div>
+                                <div class="text-xs text-slate-400 mt-1">Перенос 50% выплат ТОПам на апрель.</div>
+                            </div>
+                            <div class="w-6 h-6 rounded-full border-2 border-brand-500 flex items-center justify-center sim-check hidden">
+                                <svg class="w-4 h-4 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                            </div>
+                        </button>
+                        
+                        <button onclick="resetSimulator()" class="text-sm text-slate-500 hover:text-white transition mt-4 underline">Сбросить симулятор</button>
+                    </div>
+                </div>
+                
+                <div class="lg:col-span-3 bg-dark-900 rounded-2xl p-6 border border-slate-700 shadow-2xl">
+                    <div class="mb-4 text-center text-sm font-bold text-slate-300">Прогноз остатка денежных средств (Cash Flow)</div>
+                    <div class="relative h-[300px] w-full">
+                        <canvas id="cashflowChart"></canvas>
+                    </div>
+                    <div id="simResultMsg" class="mt-4 p-3 rounded bg-red-900/20 border border-red-500/30 text-red-400 text-sm text-center transition-all opacity-100">
+                        Внимание: Прогнозируется кассовый разрыв в Марте!
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="roi" class="py-20 bg-dark-900 border-y border-slate-800 relative overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <div class="inline-block bg-brand-900/30 text-brand-400 font-semibold px-4 py-1.5 rounded-full text-sm mb-6 border border-brand-500/30">
+                    Математика окупаемости
+                </div>
+                <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">Сколько вам стоит отсутствие финдиректора?</h2>
+                <p class="text-slate-400">В среднем бизнес без настроенного управленческого учета теряет от 2% до 5% выручки на неэффективных решениях, переплатах и кассовых разрывах. Посчитайте свою упущенную выгоду.</p>
+            </div>
+
+            <div class="bg-slate-800/50 p-8 rounded-2xl border border-slate-700 shadow-xl mb-12">
+                <div class="grid md:grid-cols-2 gap-12">
+                    <div class="space-y-8">
+                        <div>
+                            <div class="flex justify-between mb-2">
+                                <label class="text-sm font-medium text-slate-300">Ваша среднемесячная выручка (₽)</label>
+                                <span id="roiRevVal" class="text-brand-500 font-bold">20 000 000 ₽</span>
+                            </div>
+                            <input type="range" id="roiRevenue" min="1000000" max="100000000" step="1000000" value="20000000">
+                        </div>
+                        <div>
+                            <div class="flex justify-between mb-2">
+                                <label class="text-sm font-medium text-slate-300">Процент скрытых потерь</label>
+                                <span id="roiLossVal" class="text-brand-500 font-bold">2.5%</span>
+                            </div>
+                            <input type="range" id="roiLoss" min="0.5" max="10" step="0.5" value="2.5">
+                            <p class="text-xs text-slate-500 mt-2">Консервативная оценка: 2-3%</p>
+                        </div>
+                    </div>
+                    <div class="flex flex-col justify-center bg-dark-900 p-8 rounded-xl border border-slate-700 text-center">
+                        <div class="text-slate-400 text-sm mb-2">Финдиректор найдет и вернет в кассу:</div>
+                        <div id="roiAddedProfit" class="text-4xl md:text-5xl font-bold text-brand-500 mb-4">+ 500 000 ₽</div>
+                        <div class="text-xs text-slate-500">дополнительной чистой прибыли ежемесячно</div>
+                    </div>
+                </div>
+            </div>
+
+            <h3 class="text-2xl font-bold text-center text-white mb-8">Окупаемость тарифов при вашей выручке:</h3>
+            <div class="grid md:grid-cols-3 gap-6">
+                <!-- Tariff 1 -->
+                <div class="bg-dark-900 p-6 rounded-2xl border border-slate-700 flex flex-col justify-between">
+                    <div>
+                        <div class="text-slate-400 text-sm mb-1">Базовый отчет</div>
+                        <div class="text-xl font-bold text-white mb-4">150 000 ₽ <span class="text-sm font-normal text-slate-500">/ мес</span></div>
+                    </div>
+                    <div class="pt-4 border-t border-slate-800">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-sm text-slate-400">Чистая выгода:</span>
+                            <span id="t1-profit" class="font-bold text-brand-500">+ 350 000 ₽</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-slate-400">ROI:</span>
+                            <span id="t1-roi" class="font-bold text-white bg-brand-600 px-2 py-0.5 rounded text-xs">233%</span>
+                        </div>
+                        <a href="https://t.me/YOUR_TELEGRAM_USERNAME" target="_blank" class="mt-5 w-full block text-center bg-slate-800 hover:bg-slate-700 text-white font-medium py-2.5 rounded-lg border border-slate-600 transition hover:border-brand-500">Выбираю тариф</a>
+                    </div>
+                </div>
+                <!-- Tariff 2 -->
+                <div class="bg-dark-900 p-6 rounded-2xl border border-brand-500 relative flex flex-col justify-between transform md:-translate-y-2 shadow-2xl shadow-brand-500/10">
+                    <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-brand-500 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+                        Оптимально
+                    </div>
+                    <div>
+                        <div class="text-slate-400 text-sm mb-1">Отчет + Календарь</div>
+                        <div class="text-xl font-bold text-white mb-4">200 000 ₽ <span class="text-sm font-normal text-slate-500">/ мес</span></div>
+                    </div>
+                    <div class="pt-4 border-t border-slate-800">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-sm text-slate-400">Чистая выгода:</span>
+                            <span id="t2-profit" class="font-bold text-brand-500">+ 300 000 ₽</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-slate-400">ROI:</span>
+                            <span id="t2-roi" class="font-bold text-white bg-brand-600 px-2 py-0.5 rounded text-xs">150%</span>
+                        </div>
+                        <a href="https://t.me/YOUR_TELEGRAM_USERNAME" target="_blank" class="mt-5 w-full block text-center bg-brand-600 hover:bg-brand-500 text-white font-bold py-2.5 rounded-lg transition shadow-lg shadow-brand-500/20">Выбираю тариф</a>
+                    </div>
+                </div>
+                <!-- Tariff 3 -->
+                <div class="bg-dark-900 p-6 rounded-2xl border border-slate-700 flex flex-col justify-between">
+                    <div>
+                        <div class="text-slate-400 text-sm mb-1">Полная система (с финмоделью)</div>
+                        <div class="text-xl font-bold text-white mb-4">250 000 ₽ <span class="text-sm font-normal text-slate-500">/ мес</span></div>
+                    </div>
+                    <div class="pt-4 border-t border-slate-800">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-sm text-slate-400">Чистая выгода:</span>
+                            <span id="t3-profit" class="font-bold text-brand-500">+ 250 000 ₽</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-slate-400">ROI:</span>
+                            <span id="t3-roi" class="font-bold text-white bg-brand-600 px-2 py-0.5 rounded text-xs">100%</span>
+                        </div>
+                        <a href="https://t.me/YOUR_TELEGRAM_USERNAME" target="_blank" class="mt-5 w-full block text-center bg-slate-800 hover:bg-slate-700 text-white font-medium py-2.5 rounded-lg border border-slate-600 transition hover:border-brand-500">Выбираю тариф</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-12">
+                <button onclick="document.getElementById('quiz').scrollIntoView()" class="bg-brand-600 hover:bg-brand-500 text-white font-bold px-8 py-4 rounded-xl transition shadow-[0_0_15px_rgba(22,163,74,0.4)]">
+                    Перейти к оценке совместимости
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <section id="quiz" class="py-24 bg-dark-900 relative">
+        <div class="absolute inset-0 bg-brand-900/5 -z-10"></div>
+        <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">Фильтр готовности к работе</h2>
+            <p class="text-slate-400 mb-10">Я работаю не со всеми. Чтобы наше сотрудничество дало результат, ответьте на 3 вопроса. Это поможет понять, совпадают ли наши подходы к управлению бизнесом.</p>
+
+            <div class="bg-slate-800 rounded-2xl border border-slate-700 p-8 shadow-xl text-left relative overflow-hidden min-h-[320px] flex flex-col justify-center">
+                <!-- Progress bar -->
+                <div class="absolute top-0 left-0 w-full h-1 bg-slate-700">
+                    <div id="quizProgress" class="h-full bg-brand-500 transition-all duration-500 w-1/4"></div>
+                </div>
+
+                <!-- Step 1 -->
+                <div id="q-step-1" class="quiz-step transition-all duration-300">
+                    <h4 class="text-xl font-bold text-white mb-6">1. Готовы ли вы взять в штат отдельного специалиста (например, финансового менеджера), который будет педантично собирать и вносить первичные данные для финансового директора?</h4>
+                    <div class="space-y-3">
+                        <label class="flex items-center gap-3 p-4 border border-slate-600 rounded-xl cursor-pointer hover:bg-slate-700 transition" onclick="answerQuiz(1, true)">
+                            <input type="radio" name="q1" class="text-brand-500 focus:ring-brand-500">
+                            <span class="text-slate-200">Да, я понимаю, что финдиректор — это мозг и стратегия. Платить ему за ручной ввод чеков и выписок нецелесообразно.</span>
+                        </label>
+                        <label class="flex items-center gap-3 p-4 border border-slate-600 rounded-xl cursor-pointer hover:bg-slate-700 transition" onclick="answerQuiz(1, false)">
+                            <input type="radio" name="q1" class="text-brand-500 focus:ring-brand-500">
+                            <span class="text-slate-200">Нет, раз я нанимаю финдиректора с таким чеком, он должен делать всё сам: от сбора первички до отчетов.</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Step 2 -->
+                <div id="q-step-2" class="quiz-step hidden opacity-0 transition-all duration-300">
+                    <h4 class="text-xl font-bold text-white mb-6">2. Если оцифровка покажет, что ваше "любимое" направление или старый филиал генерирует стабильный убыток, готовы ли вы его закрыть?</h4>
+                    <div class="space-y-3">
+                        <label class="flex items-center gap-3 p-4 border border-slate-600 rounded-xl cursor-pointer hover:bg-slate-700 transition" onclick="answerQuiz(2, true)">
+                            <input type="radio" name="q2" class="text-brand-500 focus:ring-brand-500">
+                            <span class="text-slate-200">Да, бизнес — это про цифры, а не про эмоции. Будем отсекать убытки.</span>
+                        </label>
+                        <label class="flex items-center gap-3 p-4 border border-slate-600 rounded-xl cursor-pointer hover:bg-slate-700 transition" onclick="answerQuiz(2, false)">
+                            <input type="radio" name="q2" class="text-brand-500 focus:ring-brand-500">
+                            <span class="text-slate-200">Нет, будем тянуть до последнего, это же мое детище.</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Step 3 -->
+                <div id="q-step-3" class="quiz-step hidden opacity-0 transition-all duration-300">
+                    <h4 class="text-xl font-bold text-white mb-6">3. Кто, по вашему мнению, принимает итоговые управленческие решения и несет за них ответственность?</h4>
+                    <div class="space-y-3">
+                        <label class="flex items-center gap-3 p-4 border border-slate-600 rounded-xl cursor-pointer hover:bg-slate-700 transition" onclick="answerQuiz(3, false)">
+                            <input type="radio" name="q3" class="text-brand-500 focus:ring-brand-500">
+                            <span class="text-slate-200">Финдиректор. Он же управляет финансами, значит он и решает, что делать.</span>
+                        </label>
+                        <label class="flex items-center gap-3 p-4 border border-slate-600 rounded-xl cursor-pointer hover:bg-slate-700 transition" onclick="answerQuiz(3, true)">
+                            <input type="radio" name="q3" class="text-brand-500 focus:ring-brand-500">
+                            <span class="text-slate-200">Собственник (Я). Финдиректор дает сценарии и подсвечивает риски, но штурвал у меня.</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Fail State -->
+                <div id="q-fail" class="quiz-step hidden opacity-0 transition-all duration-300 text-center">
+                    <div class="w-20 h-20 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <svg class="w-10 h-10 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </div>
+                    <h4 class="text-2xl font-bold text-white mb-4">Нам не по пути</h4>
+                    <p class="text-slate-400 mb-6">К сожалению, наши взгляды на управление бизнесом расходятся. Финансовый директор на аутсорсе — это не волшебник и не оператор по вводу данных. Это партнер, который дает вам твердую основу для решений. Если вы не готовы делегировать первичку или принимать сложные решения на основе цифр, моя работа не принесет вам результата.</p>
+                    <button onclick="location.reload()" class="text-sm text-slate-500 hover:text-white underline transition">Начать заново</button>
+                </div>
+
+                <!-- Success / Pricing Calculator -->
+                <div id="q-pricing" class="quiz-step hidden opacity-0 transition-all duration-300">
+                    <div class="text-center mb-6">
+                        <div class="inline-block bg-brand-900/30 text-brand-400 font-semibold px-4 py-1.5 rounded-full text-sm mb-4 border border-brand-500/30">
+                            Вы прошли квалификацию
+                        </div>
+                        <h4 class="text-2xl font-bold text-white mb-2">Отличный, зрелый подход.</h4>
+                        <p class="text-sm text-slate-400">С такими собственниками я даю максимальный результат. Давайте соберем ваш тариф.</p>
+                    </div>
+
+                    <div class="space-y-3 mb-6">
+                        <!-- Base -->
+                        <div class="flex justify-between items-center p-4 border border-brand-500 bg-brand-900/10 rounded-xl">
+                            <div>
+                                <div class="font-bold text-white">Базовый отчет (ОДДС, P&L, Баланс)</div>
+                                <div class="text-xs text-slate-400">Обязательный фундамент учета</div>
+                            </div>
+                            <div class="font-bold text-brand-500">150 000 ₽</div>
+                        </div>
+
+                        <!-- Option 1 -->
+                        <label id="lbl-model" class="flex justify-between items-center p-4 border border-slate-600 rounded-xl cursor-pointer hover:bg-slate-700 transition">
+                            <div class="flex items-center gap-3">
+                                <input type="checkbox" id="addFinModel" onchange="calculateTariff()" class="w-5 h-5 text-brand-500 rounded focus:ring-brand-500 bg-slate-900 border-slate-600">
+                                <div>
+                                    <div class="font-bold text-white">Финансовая модель</div>
+                                    <div class="text-xs text-slate-400">Для планирования, инвесторов и роста</div>
+                                </div>
+                            </div>
+                            <div class="font-bold text-slate-300">+ 50 000 ₽</div>
+                        </label>
+
+                        <!-- Option 2 -->
+                        <label id="lbl-calendar" class="flex justify-between items-center p-4 border border-slate-600 rounded-xl cursor-pointer hover:bg-slate-700 transition">
+                            <div class="flex items-center gap-3">
+                                <input type="checkbox" id="addCalendar" onchange="calculateTariff()" class="w-5 h-5 text-brand-500 rounded focus:ring-brand-500 bg-slate-900 border-slate-600">
+                                <div>
+                                    <div class="font-bold text-white">Платежный календарь</div>
+                                    <div class="text-xs text-slate-400">Превентивная защита от кассовых разрывов</div>
+                                </div>
+                            </div>
+                            <div class="font-bold text-slate-300">+ 50 000 ₽</div>
+                        </label>
+                    </div>
+
+                    <div class="bg-dark-900 p-5 rounded-xl border border-slate-700 flex justify-between items-center mb-6">
+                        <div class="text-slate-400 font-medium">Итого в месяц:</div>
+                        <div id="totalPrice" class="text-2xl font-bold text-white">150 000 ₽</div>
+                    </div>
+
+                    <form id="leadForm" class="space-y-4" onsubmit="submitForm(event)">
+                        <input type="text" placeholder="Ваше имя" required class="w-full bg-dark-900 border border-slate-600 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition">
+                        <input type="tel" placeholder="Telegram / WhatsApp" required class="w-full bg-dark-900 border border-slate-600 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition">
+                        <button type="submit" class="w-full bg-brand-600 hover:bg-brand-500 text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-brand-500/20">
+                            Обсудить этот формат
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Success Modal inside Quiz -->
+                <div id="q-success" class="quiz-step hidden opacity-0 transition-all duration-300 text-center">
+                    <div class="w-20 h-20 bg-brand-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <svg class="w-10 h-10 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                    </div>
+                    <h4 class="text-2xl font-bold text-white mb-2">Заявка успешно отправлена!</h4>
+                    <p class="text-slate-400">Я свяжусь с вами в ближайшее время для обсуждения деталей.</p>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-dark-900 border-t border-slate-800 py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-6">
+            <div class="flex items-center gap-2">
+                <svg class="w-6 h-6 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+                <span class="font-bold text-lg text-white">Fin<span class="text-brand-500">Director</span></span>
+            </div>
+            <div class="text-slate-500 text-sm">
+                &copy; 2026 Профессиональный финансовый аутсорсинг. Все права защищены.
+            </div>
+            <div class="flex gap-4">
+                <a href="#" class="text-slate-500 hover:text-brand-500 transition">Политика конфиденциальности</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // --- 0. Personalization Logic (DCO) ---
+        const profiles = {
+            cashgap: {
+                title: 'Вы растете в обороте, но <span class="text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-rose-600">где реальные деньги</span> на счету?',
+                subtitle: 'Пока вы смотрите на красивые цифры выручки в отчетах отдела продаж, ваша реальная прибыль съедается кассовыми разрывами, замораживается на складе и растворяется в дебиторке.',
+                calcBadge: 'Триггер потери',
+                calcBadgeColor: 'bg-red-500',
+                calcTitle: 'Сколько денег вы заморозили?',
+                calcDesc: 'Узнайте сумму, которую вы могли бы прямо сейчас вывести как дивиденды, просто наладив оборачиваемость.'
+            },
+            chaos: {
+                title: 'Вы работаете вслепую, и <span class="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-red-600">теряете миллионы</span> на невидимых убытках?',
+                subtitle: 'Бухгалтер сдает отчеты для налоговой, но для управления бизнесом у вас только интуиция. Одно неверное решение может стоить компании, потому что вы не видите реальную рентабельность.',
+                calcBadge: 'Слепая зона',
+                calcBadgeColor: 'bg-orange-500',
+                calcTitle: 'Сколько прибыли съедает хаос?',
+                calcDesc: 'Неэффективное управление капиталом сжигает деньги ежедневно. Рассчитайте примерную сумму потерь при вашем обороте.'
+            },
+            scale: {
+                title: 'Готовы к масштабированию, но инвесторы <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-400 to-brand-600">требуют прозрачности</span>?',
+                subtitle: 'Чтобы привлечь капитал, безопасно вырасти х2 или выйти из операционки, вам нужна не просто бухгалтерия, а твердая финансовая модель и оцифрованные дашборды.',
+                calcBadge: 'Цена роста',
+                calcBadgeColor: 'bg-brand-500',
+                calcTitle: 'Какова цена ошибки при росте?',
+                calcDesc: 'При масштабировании хаоса масштабируются убытки. Посмотрите, сколько вы рискуете потерять без оцифрованной финмодели.'
+            }
+        };
+
+        function selectProfile(type) {
+            const data = profiles[type];
+            
+            // Update Texts
+            document.getElementById('hero-title').innerHTML = data.title;
+            document.getElementById('hero-subtitle').innerHTML = data.subtitle;
+            
+            const badge = document.getElementById('calc-badge');
+            badge.innerHTML = data.calcBadge;
+            badge.className = `absolute -top-4 -right-4 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg transform rotate-12 transition-colors duration-300 ${data.calcBadgeColor}`;
+            
+            document.getElementById('calc-title').innerHTML = data.calcTitle;
+            document.getElementById('calc-desc').innerHTML = data.calcDesc;
+
+            // Animate Gateway out
+            const screen = document.getElementById('welcome-screen');
+            const card = document.getElementById('welcome-card');
+            
+            card.classList.remove('scale-100');
+            card.classList.add('scale-95', 'opacity-0');
+            
+            setTimeout(() => {
+                screen.style.opacity = '0';
+                setTimeout(() => {
+                    screen.style.display = 'none';
+                    document.body.classList.remove('overflow-hidden'); // Allow page scrolling
+                }, 700);
+            }, 300);
+        }
+
+        // --- 1. Calculator Logic ---
+        const revSlider = document.getElementById('revenue');
+        const delaySlider = document.getElementById('delay');
+        const revVal = document.getElementById('revVal');
+        const delayVal = document.getElementById('delayVal');
+        const frozenResult = document.getElementById('frozenResult');
+
+        function formatCurrency(num) {
+            return new Intl.NumberFormat('ru-RU').format(num) + ' ₽';
+        }
+
+        function calculateFrozenCash() {
+            const revenue = parseInt(revSlider.value);
+            const delay = parseInt(delaySlider.value);
+            
+            // UI Updates
+            revVal.textContent = formatCurrency(revenue);
+            delayVal.textContent = delay + ' дней';
+
+            // Simplified formula: (Revenue / 30) * Delay days = money stuck in receivables
+            const frozen = Math.round((revenue / 30) * delay);
+            frozenResult.textContent = formatCurrency(frozen);
+        }
+
+        revSlider.addEventListener('input', calculateFrozenCash);
+        delaySlider.addEventListener('input', calculateFrozenCash);
+        calculateFrozenCash(); // Init
+
+        // --- 2. Tabs Logic (Before / After) ---
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => {
+                el.classList.remove('active');
+                el.style.opacity = '0';
+                setTimeout(() => el.style.display = 'none', 300);
+            });
+            
+            const btnBefore = document.getElementById('btn-before');
+            const btnAfter = document.getElementById('btn-after');
+            
+            if(tabId === 'before') {
+                btnBefore.classList.add('bg-slate-700', 'text-white');
+                btnBefore.classList.remove('text-slate-400');
+                btnAfter.classList.remove('bg-slate-700', 'text-white');
+                btnAfter.classList.add('text-slate-400');
+            } else {
+                btnAfter.classList.add('bg-slate-700', 'text-white');
+                btnAfter.classList.remove('text-slate-400');
+                btnBefore.classList.remove('bg-slate-700', 'text-white');
+                btnBefore.classList.add('text-slate-400');
+            }
+
+            setTimeout(() => {
+                const target = document.getElementById(`tab-${tabId}`);
+                target.style.display = 'block';
+                // Trigger reflow
+                void target.offsetWidth; 
+                target.style.opacity = '1';
+                target.classList.add('active');
+            }, 300);
+        }
+
+        // --- 3. Chart.js Simulator Logic ---
+        let cashflowChart;
+        // Base arrays
+        const months = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май'];
+        const baseData = [1200, 400, -500, -200, 800]; // Base state with cash gap in March/April
+        
+        let stateDecision1 = false;
+        let stateDecision2 = false;
+
+        function initChart() {
+            const ctx = document.getElementById('cashflowChart').getContext('2d');
+            Chart.defaults.color = '#94a3b8';
+            Chart.defaults.font.family = 'Inter';
+
+            cashflowChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: months,
+                    datasets: [{
+                        label: 'Остаток на счетах (тыс. ₽)',
+                        data: [...baseData],
+                        borderColor: '#ef4444', // Red initially
+                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                        borderWidth: 3,
+                        pointBackgroundColor: '#0f172a',
+                        pointBorderColor: '#ef4444',
+                        pointBorderWidth: 2,
+                        pointRadius: 6,
+                        pointHoverRadius: 8,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: '#1e293b',
+                            titleColor: '#fff',
+                            bodyColor: '#cbd5e1',
+                            borderColor: '#334155',
+                            borderWidth: 1,
+                            padding: 10,
+                            callbacks: {
+                                label: function(context) {
+                                    return context.parsed.y + ' тыс. ₽';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            grid: { color: '#334155', drawBorder: false },
+                            ticks: {
+                                callback: function(value) { return value + 'k'; }
+                            }
+                        },
+                        x: {
+                            grid: { display: false, drawBorder: false }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateChartAndUI() {
+            let newData = [...baseData];
+            
+            // Apply modifiers based on decisions
+            if (stateDecision1) {
+                // Reduces receivables, brings cash faster (Feb +300, Mar +400, Apr +100)
+                newData[1] += 300;
+                newData[2] += 400;
+                newData[3] += 100;
+            }
+            if (stateDecision2) {
+                // Saves cash in Feb/Mar, moves payout to April
+                newData[1] += 200;
+                newData[2] += 200;
+                newData[3] -= 400; 
+            }
+
+            // Calculate cumulative or just show point-in-time. (We use point-in-time balance)
+            cashflowChart.data.datasets[0].data = newData;
+
+            // Determine if there's still a gap
+            const hasGap = newData.some(val => val < 0);
+            
+            const msgEl = document.getElementById('simResultMsg');
+            const dataset = cashflowChart.data.datasets[0];
+
+            if (hasGap) {
+                dataset.borderColor = '#ef4444'; // Red
+                dataset.backgroundColor = 'rgba(239, 68, 68, 0.1)';
+                dataset.pointBorderColor = '#ef4444';
+                msgEl.className = 'mt-4 p-3 rounded bg-red-900/20 border border-red-500/30 text-red-400 text-sm text-center transition-all opacity-100';
+                msgEl.innerHTML = 'Внимание: Кассовый разрыв все еще вероятен. Нужны дальнейшие действия.';
+            } else {
+                dataset.borderColor = '#22c55e'; // Green
+                dataset.backgroundColor = 'rgba(34, 197, 94, 0.1)';
+                dataset.pointBorderColor = '#22c55e';
+                msgEl.className = 'mt-4 p-3 rounded bg-brand-900/20 border border-brand-500/30 text-brand-400 text-sm text-center transition-all opacity-100';
+                msgEl.innerHTML = 'Отлично! Вы вывели компанию из кассового разрыва исключительно управленческими решениями, без кредитов.';
+            }
+
+            cashflowChart.update();
+        }
+
+        function applyDecision(num) {
+            const btn = document.getElementById('simBtn' + num);
+            const check = btn.querySelector('.sim-check');
+            
+            if (num === 1) {
+                stateDecision1 = !stateDecision1;
+                toggleBtnStyles(btn, check, stateDecision1);
+            } else if (num === 2) {
+                stateDecision2 = !stateDecision2;
+                toggleBtnStyles(btn, check, stateDecision2);
+            }
+            updateChartAndUI();
+        }
+
+        function toggleBtnStyles(btn, check, state) {
+            if (state) {
+                btn.classList.add('border-brand-500', 'bg-slate-700');
+                btn.classList.remove('border-brand-500/30', 'bg-slate-800');
+                check.classList.remove('hidden');
+            } else {
+                btn.classList.remove('border-brand-500', 'bg-slate-700');
+                btn.classList.add('border-brand-500/30', 'bg-slate-800');
+                check.classList.add('hidden');
+            }
+        }
+
+        function resetSimulator() {
+            stateDecision1 = false;
+            stateDecision2 = false;
+            toggleBtnStyles(document.getElementById('simBtn1'), document.getElementById('simBtn1').querySelector('.sim-check'), false);
+            toggleBtnStyles(document.getElementById('simBtn2'), document.getElementById('simBtn2').querySelector('.sim-check'), false);
+            
+            // Reset message
+            const msgEl = document.getElementById('simResultMsg');
+            msgEl.className = 'mt-4 p-3 rounded bg-red-900/20 border border-red-500/30 text-red-400 text-sm text-center transition-all opacity-100';
+            msgEl.innerHTML = 'Внимание: Прогнозируется кассовый разрыв в Марте!';
+            
+            updateChartAndUI();
+        }
+
+        // --- 3.5 ROI Calculator Logic ---
+        const roiRevSlider = document.getElementById('roiRevenue');
+        const roiLossSlider = document.getElementById('roiLoss');
+        
+        function calculateROIEffect() {
+            if (!roiRevSlider || !roiLossSlider) return;
+            const rev = parseInt(roiRevSlider.value);
+            const lossPercent = parseFloat(roiLossSlider.value);
+            
+            // Update Labels
+            document.getElementById('roiRevVal').textContent = formatCurrency(rev);
+            document.getElementById('roiLossVal').textContent = lossPercent + '%';
+            
+            // Calculate added profit
+            const addedProfit = Math.round(rev * (lossPercent / 100));
+            const addedProfitEl = document.getElementById('roiAddedProfit');
+            if (addedProfitEl) addedProfitEl.textContent = '+ ' + formatCurrency(addedProfit);
+            
+            // Tariffs
+            const tariffs = [
+                { id: 't1', cost: 150000 },
+                { id: 't2', cost: 200000 },
+                { id: 't3', cost: 250000 }
+            ];
+            
+            tariffs.forEach(t => {
+                const netBenefit = addedProfit - t.cost;
+                const roiPercentage = Math.round((addedProfit / t.cost) * 100);
+                
+                const profitEl = document.getElementById(`${t.id}-profit`);
+                const roiEl = document.getElementById(`${t.id}-roi`);
+                
+                if (!profitEl || !roiEl) return;
+
+                if (netBenefit > 0) {
+                    profitEl.textContent = '+ ' + formatCurrency(netBenefit);
+                    profitEl.className = 'font-bold text-brand-500';
+                    roiEl.textContent = roiPercentage + '%';
+                    roiEl.className = 'font-bold text-white bg-brand-600 px-2 py-0.5 rounded text-xs';
+                } else if (netBenefit < 0) {
+                    profitEl.textContent = formatCurrency(netBenefit);
+                    profitEl.className = 'font-bold text-red-500';
+                    roiEl.textContent = 'Оборот мал';
+                    roiEl.className = 'font-bold text-white bg-red-900/50 px-2 py-0.5 rounded text-xs';
+                } else {
+                    profitEl.textContent = '0 ₽';
+                    profitEl.className = 'font-bold text-slate-400';
+                    roiEl.textContent = '100%';
+                    roiEl.className = 'font-bold text-white bg-slate-700 px-2 py-0.5 rounded text-xs';
+                }
+            });
+        }
+        
+        if (roiRevSlider && roiLossSlider) {
+            roiRevSlider.addEventListener('input', calculateROIEffect);
+            roiLossSlider.addEventListener('input', calculateROIEffect);
+            calculateROIEffect(); // Init on load
+        }
+
+        // --- 4. Quiz / Filter Logic ---
+        function answerQuiz(stepNum, isAdequate) {
+            const current = document.getElementById('q-step-' + stepNum);
+            current.style.opacity = '0';
+            
+            setTimeout(() => {
+                current.classList.add('hidden');
+                
+                // Проверка на неадекватность
+                if (!isAdequate) {
+                    const fail = document.getElementById('q-fail');
+                    fail.classList.remove('hidden');
+                    void fail.offsetWidth; // trigger reflow
+                    fail.style.opacity = '1';
+                    
+                    const progress = document.getElementById('quizProgress');
+                    progress.style.width = '100%';
+                    progress.classList.remove('bg-brand-500');
+                    progress.classList.add('bg-red-500');
+                    return;
+                }
+
+                // Переход дальше (всего 3 вопроса)
+                if (stepNum < 3) {
+                    const next = document.getElementById('q-step-' + (stepNum + 1));
+                    next.classList.remove('hidden');
+                    void next.offsetWidth;
+                    next.style.opacity = '1';
+                    document.getElementById('quizProgress').style.width = ((stepNum + 1) * 33.3) + '%';
+                } else {
+                    // Пользователь ответил правильно на все вопросы
+                    const pricing = document.getElementById('q-pricing');
+                    pricing.classList.remove('hidden');
+                    void pricing.offsetWidth;
+                    pricing.style.opacity = '1';
+                    document.getElementById('quizProgress').style.width = '100%';
+                    calculateTariff(); // Инициализация суммы тарифа при открытии
+                }
+            }, 300);
+        }
+
+        // --- 5. Pricing Calculator ---
+        function formatTariff(num) {
+            return new Intl.NumberFormat('ru-RU').format(num) + ' ₽';
+        }
+
+        function calculateTariff() {
+            let total = 150000; // Базовая стоимость
+            
+            const isModelChecked = document.getElementById('addFinModel').checked;
+            const isCalendarChecked = document.getElementById('addCalendar').checked;
+            
+            const lblModel = document.getElementById('lbl-model');
+            const lblCalendar = document.getElementById('lbl-calendar');
+            
+            if (isModelChecked) {
+                total += 50000;
+                lblModel.classList.add('border-brand-500', 'bg-brand-900/10');
+                lblModel.classList.remove('border-slate-600', 'hover:bg-slate-700');
+            } else {
+                lblModel.classList.remove('border-brand-500', 'bg-brand-900/10');
+                lblModel.classList.add('border-slate-600', 'hover:bg-slate-700');
+            }
+
+            if (isCalendarChecked) {
+                total += 50000;
+                lblCalendar.classList.add('border-brand-500', 'bg-brand-900/10');
+                lblCalendar.classList.remove('border-slate-600', 'hover:bg-slate-700');
+            } else {
+                lblCalendar.classList.remove('border-brand-500', 'bg-brand-900/10');
+                lblCalendar.classList.add('border-slate-600', 'hover:bg-slate-700');
+            }
+            
+            document.getElementById('totalPrice').textContent = formatTariff(total);
+        }
+
+        function submitForm(e) {
+            e.preventDefault();
+            const current = document.getElementById('q-pricing');
+            current.style.opacity = '0';
+            
+            setTimeout(() => {
+                current.classList.add('hidden');
+                const success = document.getElementById('q-success');
+                success.classList.remove('hidden');
+                void success.offsetWidth;
+                success.style.opacity = '1';
+            }, 300);
+        }
+
+        // Init Chart on load
+        window.onload = function() {
+            initChart();
+        };
+    </script>
+</body>
+</html>
